@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as stockActions from '../actions/stockActions';
+import * as profileActions from '../actions/profileActions';
 import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router-dom';
 import Dashboard from './Dashboard';
 import Header from '../components/Header';
 import moment from 'moment';
@@ -19,8 +19,9 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.props.profileActions.setTotalCapital(200000);
     if (!this.props.stockReducer.stocks.length) {
-      this.props.actions.getStocks();
+      this.props.stockActions.getStocks();
     }
   }
 
@@ -55,8 +56,6 @@ class App extends Component {
       this._createStockObject(stockArray, date)
     );
 
-    console.log(mappedResults, 'mapped');
-
     // remove all falsy values i.e null, 0, "", undefined, and NaN
     // deal with the fact that some dates return insufficient data
 
@@ -65,7 +64,6 @@ class App extends Component {
 
   _createStockObject = (stockTickerArray, relativeDate) => {
     if (relativeDate == null) {
-      console.log('here??????');
       return null;
     }
 
@@ -91,7 +89,9 @@ class App extends Component {
     // TODO: handle weekends with no data
     return {
       ticker: stockTickerArray[0].ticker,
-      current: dayCurrentValue ? dayCurrentValue.closingPrice : 'none',
+      current: dayCurrentValue
+        ? dayCurrentValue.closingPrice.toFixed(2)
+        : 'none',
       one:
         dayOneValue && dayCurrentValue
           ? this._processStockValue(
@@ -122,6 +122,7 @@ class App extends Component {
   };
 
   render() {
+    console.log(this.props);
     const { isFetching, error, stocks } = this.props.stockReducer;
 
     const loadingMessage = <p>fetching stock data....</p>;
@@ -134,6 +135,8 @@ class App extends Component {
         onChangeDate={this.onChangeDate}
         stocks={this.getStocks()}
         updateFilterValue={this.updateFilterValue}
+        profile={this.props.profileReducer}
+        selectedDate={this.state.selectedDate}
       />
     );
     return (
@@ -149,7 +152,8 @@ class App extends Component {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(stockActions, dispatch)
+  stockActions: bindActionCreators(stockActions, dispatch),
+  profileActions: bindActionCreators(profileActions, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

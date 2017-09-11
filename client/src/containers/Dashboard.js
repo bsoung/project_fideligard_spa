@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as actions from '../actions/stockActions';
 import Stocks from '../components/Stocks';
 import Portfolio from '../components/Portfolio';
+import Trade from '../components/Trade';
 import _ from 'lodash';
 
 class Dashboard extends Component {
@@ -12,13 +13,15 @@ class Dashboard extends Component {
 
 		this.state = {
 			filteredStocks: [],
-			symbolDesc: false
+			symbolDesc: false,
+			priceDesc: false,
+			showPortfolio: true,
+			stock: {}
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const currentProps = this.state.filteredStocks;
-		console.log(nextProps, '???');
 
 		if (!_.isEqual(currentProps, nextProps)) {
 			this.setState({
@@ -27,27 +30,34 @@ class Dashboard extends Component {
 		}
 	}
 
-	onClickSort = (optionsArray, sortType) => {
+	onClickSort = (dataType, sortType, symbolType) => {
 		let copy = Object.assign({}, this.state);
-		let sortedArr = _.orderBy(copy.filteredStocks, optionsArray, sortType);
-		console.log(copy.filteredStocks, 'original', sortedArr, 'sorted');
+		let sortedArr = _.orderBy(copy.filteredStocks, [dataType], sortType);
+
 		this.setState({
 			filteredStocks: sortedArr
 		});
 
 		if (sortType === 'asc') {
 			this.setState({
-				symbolDesc: false
+				[symbolType]: false
 			});
 		} else {
 			this.setState({
-				symbolDesc: true
+				[symbolType]: true
 			});
 		}
 	};
 
+	showTrade = stock => {
+		return this.setState({
+			stock,
+			showPortfolio: false
+		});
+	};
+
 	render() {
-		console.log(this.state.filteredStocks);
+		const { showPortfolio, stock } = this.state;
 		return (
 			<div className="container">
 				<div className="row-fluid">
@@ -65,6 +75,7 @@ class Dashboard extends Component {
 							stocks={this.state.filteredStocks}
 							symbolDesc={this.state.symbolDesc}
 							onClickSort={this.onClickSort}
+							showTrade={this.showTrade}
 						/>
 					</div>
 					<div className="col-xs-7">
@@ -83,8 +94,12 @@ class Dashboard extends Component {
 								</div>
 							</form>
 							<div>
-								<h2>Portfolio</h2>
-								<Portfolio />
+								{showPortfolio
+									? <Portfolio profile={this.props.profile} />
+									: <Trade
+											stock={stock}
+											selectedDate={this.props.selectedDate}
+										/>}
 							</div>
 						</div>
 					</div>
@@ -94,7 +109,4 @@ class Dashboard extends Component {
 	}
 }
 
-const mapStateToProps = state => state;
-
 export default Dashboard;
-// <Slider min={0} max={20} defaultValue={3} handle={Handle} />

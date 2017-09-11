@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const StockRow = ({ stock }) => {
+const StockRow = ({ stock, showTrade }) => {
 	return (
 		<tr>
 			<td>
@@ -18,24 +19,32 @@ const StockRow = ({ stock }) => {
 			<td>
 				{stock.thirty}
 			</td>
-			<td>Trade</td>
+			<td>
+				<a onClick={() => showTrade(stock)}>Trade</a>
+			</td>
 		</tr>
 	);
 };
 
-export default ({ onClickSort, stocks, symbolDesc }) => {
-	console.log(stocks, 'inside stocks comp');
+export default ({ onClickSort, stocks, symbolDesc, priceDesc, showTrade }) => {
+	console.log(symbolDesc, 'inside stocks comp');
 
-	const caretDown = (
-		<a onClick={() => onClickSort(['ticker'], 'asc')}>
-			<i className="fa fa-caret-down" aria-hidden="true" />
-		</a>
-	);
-	const caretUp = (
-		<a onClick={() => onClickSort(['ticker'], 'desc')}>
-			<i className="fa fa-caret-up" aria-hidden="true" />
-		</a>
-	);
+	const createCaret = (dataType, sortType, symbolType, symbolBool) => {
+		if (symbolBool === true) {
+			return (
+				<a onClick={() => onClickSort(dataType, sortType, symbolType)}>
+					<i className="fa fa-caret-up" aria-hidden="true" />
+				</a>
+			);
+		} else {
+			return (
+				<a onClick={() => onClickSort(dataType, sortType, symbolType)}>
+					<i className="fa fa-caret-down" aria-hidden="true" />
+				</a>
+			);
+		}
+	};
+
 	return (
 		<div>
 			<table className="table">
@@ -43,9 +52,16 @@ export default ({ onClickSort, stocks, symbolDesc }) => {
 					<tr>
 						<th>
 							Symbol
-							{!symbolDesc ? caretUp : caretDown}
+							{!symbolDesc
+								? createCaret('ticker', 'desc', 'symbolDesc', symbolDesc)
+								: createCaret('ticker', 'asc', 'symbolDesc', symbolDesc)}
 						</th>
-						<th>Price</th>
+						<th>
+							Price
+							{!priceDesc
+								? createCaret('current', 'desc', 'priceDesc', priceDesc)
+								: createCaret('current', 'asc', 'priceDesc', priceDesc)}
+						</th>
 						<th>1d</th>
 						<th>7d</th>
 						<th>30d</th>
@@ -54,7 +70,7 @@ export default ({ onClickSort, stocks, symbolDesc }) => {
 				</thead>
 				<tbody>
 					{stocks.map((stock, i) => {
-						return <StockRow stock={stock} key={i} />;
+						return <StockRow stock={stock} key={i} showTrade={showTrade} />;
 					})}
 				</tbody>
 			</table>

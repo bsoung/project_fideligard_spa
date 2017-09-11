@@ -5,6 +5,13 @@ body {
 }
 
 .portfolio {
+	margin-top: 35px;
+	border: 1px solid black;
+	height: 500px;
+}
+
+.trade {
+	margin-top: 35px;
 	border: 1px solid black;
 	height: 500px;
 }

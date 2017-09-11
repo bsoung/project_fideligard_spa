@@ -1,7 +1,5 @@
 import superagent from 'superagent';
-
 import stockConstants from '../constants/stockConstants';
-
 
 export function getStocksRequest() {
 	return {
@@ -27,9 +25,7 @@ export const getStocks = () => async dispatch => {
 	dispatch(getStocksRequest());
 
 	try {
-		const response = await superagent
-			.get('api/stocks')
-			.buffer();
+		const response = await superagent.get('api/stocks').buffer();
 		dispatch(getStocksSuccess(response.body.response));
 	} catch (e) {
 		dispatch(getStocksFailure(e));

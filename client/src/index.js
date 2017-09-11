@@ -4,27 +4,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import './index.css';
 import App from './containers/App';
-// import Stocks from './containers/Stocks';
-// import Dashboard from './containers/Dashboard';
+import Trade from './components/Trade';
 
-// import Starships from './containers/Starships';
-// import Film from './components/Film';
-// import Person from './components/Person';
-// import Starship from './components/Starship';
 import configureStore from './store';
 import { Provider } from 'react-redux';
 import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-
-// <Route path="/stocks" component={Stocks} />
-
-// <Route path="/dashboard" component={Dashboard}
 
 const app = (
 	<Provider store={configureStore()}>
 		<Router>
 			<div>
 				<Route exact path="/" component={App} />
+				<Route path="/trade/:ticker" render={props => <Trade {...props} />} />
 			</div>
 		</Router>
 	</Provider>

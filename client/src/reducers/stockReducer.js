@@ -9,7 +9,6 @@ const initialState = {
 };
 
 export default (state = initialState, action = {}) => {
-	// maybe switch to Object.assign instead
 	let updated = _.merge({}, state);
 
 	switch (action.type) {
