@@ -23,14 +23,28 @@ const StockRow = ({ stock }) => {
 	);
 };
 
-export default props => {
+export default ({ onClickSort, stocks, symbolDesc }) => {
+	console.log(stocks, 'inside stocks comp');
+
+	const caretDown = (
+		<a onClick={() => onClickSort(['ticker'], 'asc')}>
+			<i className="fa fa-caret-down" aria-hidden="true" />
+		</a>
+	);
+	const caretUp = (
+		<a onClick={() => onClickSort(['ticker'], 'desc')}>
+			<i className="fa fa-caret-up" aria-hidden="true" />
+		</a>
+	);
 	return (
 		<div>
-			<h2>Stocks</h2>
 			<table className="table">
 				<thead>
 					<tr>
-						<th>Symbol</th>
+						<th>
+							Symbol
+							{!symbolDesc ? caretUp : caretDown}
+						</th>
 						<th>Price</th>
 						<th>1d</th>
 						<th>7d</th>
@@ -39,7 +53,7 @@ export default props => {
 					</tr>
 				</thead>
 				<tbody>
-					{props.stocks.map((stock, i) => {
+					{stocks.map((stock, i) => {
 						return <StockRow stock={stock} key={i} />;
 					})}
 				</tbody>

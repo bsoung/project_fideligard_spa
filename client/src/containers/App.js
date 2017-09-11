@@ -24,6 +24,13 @@ class App extends Component {
     }
   }
 
+  onChangeDate = e => {
+    let selectedDate = e.target.value;
+    this.setState({
+      selectedDate: selectedDate
+    });
+  };
+
   updateFilterValue = e => {
     let input = e.target.value.toLowerCase();
     this.setState({
@@ -31,35 +38,34 @@ class App extends Component {
     });
   };
 
-  onDateChange = e => {
-    let selectedDate = e.target.value;
-    this.setState({
-      selectedDate: selectedDate
-    });
-  };
-
   getStocks = () => {
     const date = this.state.selectedDate;
     const stockNameFilter = this.state.filterText;
     const stockArray = this.props.stockReducer.stocks;
+
     const filteredStocks = stockArray.filter(stock => {
       return stock.ticker.toLowerCase().indexOf(stockNameFilter) >= 0;
     });
+
     // group each filtered stock by ticker into a composite object
     const groupedStocks = _.groupBy(filteredStocks, f => f.ticker);
 
     // create an array based on the results of our mappedResults
     const mappedResults = _.map(groupedStocks, stockArray =>
-      this.createStockObject(stockArray, date)
+      this._createStockObject(stockArray, date)
     );
+
+    console.log(mappedResults, 'mapped');
 
     // remove all falsy values i.e null, 0, "", undefined, and NaN
     // deal with the fact that some dates return insufficient data
+
     return _.compact(mappedResults);
   };
 
-  createStockObject = (stockTickerArray, relativeDate) => {
+  _createStockObject = (stockTickerArray, relativeDate) => {
     if (relativeDate == null) {
+      console.log('here??????');
       return null;
     }
 
@@ -88,26 +94,26 @@ class App extends Component {
       current: dayCurrentValue ? dayCurrentValue.closingPrice : 'none',
       one:
         dayOneValue && dayCurrentValue
-          ? this.processStockValue(
+          ? this._processStockValue(
               dayOneValue.closingPrice - dayCurrentValue.closingPrice
             )
           : 'none',
       seven:
         daySevenValue && dayCurrentValue
-          ? this.processStockValue(
+          ? this._processStockValue(
               daySevenValue.closingPrice - dayCurrentValue.closingPrice
             )
           : 'none',
       thirty:
         dayThirtyValue && dayCurrentValue
-          ? this.processStockValue(
+          ? this._processStockValue(
               dayThirtyValue.closingPrice - dayCurrentValue.closingPrice
             )
           : 'none'
     };
   };
 
-  processStockValue = stock => {
+  _processStockValue = stock => {
     if (stock > 0) {
       return `+${stock.toFixed(2)}`;
     } else {
@@ -116,14 +122,25 @@ class App extends Component {
   };
 
   render() {
+    const { isFetching, error, stocks } = this.props.stockReducer;
+
+    const loadingMessage = <p>fetching stock data....</p>;
+    const errorMessage = (
+      <p>Oops! Something went wrong. Try refreshing the page</p>
+    );
+
+    const dashboard = (
+      <Dashboard
+        onChangeDate={this.onChangeDate}
+        stocks={this.getStocks()}
+        updateFilterValue={this.updateFilterValue}
+      />
+    );
     return (
       <div className="app">
         <Header />
-        <Dashboard
-          onDateChange={this.onDateChange}
-          stocks={this.getStocks()}
-          updateFilterValue={this.updateFilterValue}
-        />
+        {isFetching ? loadingMessage : dashboard}
+        {error && errorMessage}
       </div>
     );
   }

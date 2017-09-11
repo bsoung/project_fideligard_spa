@@ -9,6 +9,7 @@ const initialState = {
 };
 
 export default (state = initialState, action = {}) => {
+	// maybe switch to Object.assign instead
 	let updated = _.merge({}, state);
 
 	switch (action.type) {
@@ -19,11 +20,13 @@ export default (state = initialState, action = {}) => {
 
 		case stockConstants.GET_STOCKS_SUCCESS:
 			updated.stocks = action.payload;
+			updated.isFetching = false;
 			return updated;
 
 		case stockConstants.GET_STOCKS_FAILURE:
-			updated.error = action.payload;
 			updated.stocks = [];
+			updated.isFetching = false;
+			updated.error = action.payload;
 
 			return updated;
 
