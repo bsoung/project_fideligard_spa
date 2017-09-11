@@ -8,7 +8,6 @@ const initialState = {
 	error: null
 };
 
-
 export default (state = initialState, action = {}) => {
 	let updated = _.merge({}, state);
 
@@ -20,11 +19,11 @@ export default (state = initialState, action = {}) => {
 
 		case stockConstants.GET_STOCKS_SUCCESS:
 			updated.stocks = action.payload;
-			console.log("stockReducer line 25 ", action.payload)
 			return updated;
 
 		case stockConstants.GET_STOCKS_FAILURE:
 			updated.error = action.payload;
+			updated.stocks = [];
 
 			return updated;
 

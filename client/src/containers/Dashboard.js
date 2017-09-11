@@ -15,17 +15,35 @@ class Dashboard extends Component {
 	render() {
 		return (
 			<div className="container">
-				<div className="row">
-					<div className="col-xs-4">
+				<div className="row-fluid">
+					<div className="col-xs-6">
+						<input
+							type="text"
+							id="filter"
+							name="filter"
+							placeholder="filter stocks"
+							onChange={this.props.updateFilterValue}
+						/>
 						<Stocks stocks={this.props.stocks} />
 					</div>
-					<div className="col-xs-4">
-						<form>
-						  <div>
-						    <label htmlFor="datePicker">Choose a date to display stock prices:</label>
-						    <input type="date" id="datePicker" name="datePicker" min="2016-01-01" max="2016-12-31" onChange={this.props.onDateChange}/>
-						  </div>
-						</form>
+					<div className="col-xs-6">
+						<div className="row-fluid">
+							<form>
+								<div>
+									<label htmlFor="datePicker">
+										Choose a date to display stock prices:
+									</label>
+									<input
+										type="date"
+										id="datePicker"
+										name="datePicker"
+										min="2016-01-01"
+										max="2016-12-31"
+										onChange={this.props.onDateChange}
+									/>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -36,4 +54,4 @@ class Dashboard extends Component {
 const mapStateToProps = state => state;
 
 export default connect(mapStateToProps, null)(Dashboard);
-						// <Slider min={0} max={20} defaultValue={3} handle={Handle} />
+// <Slider min={0} max={20} defaultValue={3} handle={Handle} />

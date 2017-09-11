@@ -13,23 +13,30 @@ module.exports = {
       if (files.length === 1) {
         const URL = `https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?qopts.columns=ticker,date,close&ticker=AAPL,AMZN,GOOG,NFLX,DIS,TSLA,TWTR,MSFT,VZ,ABBV,WMT,UTHR,BCO&date.gte=20160101&date.lte=20161231&api_key=${QUANDL_API_KEY}`;
 
-        const response = await superagent
-          .get(URL)
-          .query(params)
-          .set('Accept', 'application/json')
-          .buffer();
+        const response = await superagent.get(URL).query(params).buffer();
 
         let output = await response.body;
+        let sanitizedOutput = [];
 
-        _saveJSON(output);
+        output.datatable.data.forEach(file => {
+          sanitizedOutput.push({
+            ticker: file[0],
+            date: file[1],
+            closingPrice: file[2]
+          });
+        });
+
+        _saveJSON(sanitizedOutput);
       }
+
+      files = fs.readdirSync(dirname);
 
       const filePath = `./data/${files[1]}`;
       let file = fs.readFileSync(filePath, 'utf8');
 
       file = JSON.parse(file);
 
-      return file.datatable.data;
+      return file;
     } catch (e) {
       console.error(e.stack);
     }
